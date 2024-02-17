@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/rusmDocs/rusmDocs/pkg/database"
+	"github.com/rusmDocs/rusmDocs/pkg/exceptionCodes"
 )
 
 func (user *User) createUser(body RegisterBody) error {
@@ -23,7 +24,9 @@ func (user *User) createUser(body RegisterBody) error {
 	})
 
 	if err != nil {
-		return errors.New("email conflict")
+		return errors.New(
+			exceptionCodes.MakeException(exceptionCodes.EntityExists, "user"),
+		)
 	}
 
 	err = coll.FindOne(ctx, bson.D{
@@ -46,7 +49,9 @@ func (user *User) checkUser(body LoginBody) error {
 	}
 
 	if user.Password != body.Password {
-		return errors.New("incorrect password")
+		return errors.New(
+			exceptionCodes.MakeException(exceptionCodes.EntityInvalid, "user"),
+		)
 	}
 
 	return nil
