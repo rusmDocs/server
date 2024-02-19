@@ -2,6 +2,7 @@ package user
 
 import (
 	"encoding/json"
+	"github.com/rusmDocs/rusmDocs/pkg/exceptionCodes"
 	"net/http"
 )
 
@@ -27,7 +28,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	err = user.createUser(userBody)
 	if err != nil {
 		switch err.Error() {
-		case "email conflict":
+		case exceptionCodes.MakeException(exceptionCodes.EntityExists, "user"):
 			w.WriteHeader(http.StatusConflict)
 			return
 		}
@@ -48,10 +49,10 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	err = user.checkUser(userBody)
 	if err != nil {
 		switch err.Error() {
-		case "user not found":
+		case exceptionCodes.MakeException(exceptionCodes.EntityNotFound, "user"):
 			w.WriteHeader(http.StatusNotFound)
 			return
-		case "incorrect password":
+		case exceptionCodes.MakeException(exceptionCodes.EntityInvalid, "user"):
 			w.WriteHeader(http.StatusUnauthorized)
 		}
 	}
