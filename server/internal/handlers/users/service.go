@@ -17,11 +17,7 @@ func (user *User) createUser(body RegisterBody) error {
 
 	coll := database.UseCollection("users")
 
-	result, err := coll.InsertOne(ctx, bson.D{
-		{"login", body.Login},
-		{"password", body.Password},
-		{"email", body.Email},
-	})
+	result, err := coll.InsertOne(ctx, body)
 
 	if err != nil {
 		return errors.New(
