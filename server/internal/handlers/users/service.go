@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"errors"
+	"github.com/rusmDocs/rusmDocs/pkg/passwords"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
@@ -16,6 +17,8 @@ func (user *User) createUser(body RegisterBody) error {
 	defer cancel()
 
 	coll := database.UseCollection("users")
+
+	body.Password = passwords.HashPassword(body.Password, body.Login)
 
 	result, err := coll.InsertOne(ctx, body)
 
@@ -40,11 +43,14 @@ func (user *User) checkUser(body LoginBody) error {
 	err := coll.FindOne(ctx, bson.D{
 		{"login", body.Login},
 	}).Decode(user)
+
 	if err != nil {
-		return errors.New("user not found")
+		return errors.New(
+			exceptionCodes.MakeException(exceptionCodes.EntityNotFound, "user"),
+		)
 	}
 
-	if user.Password != body.Password {
+	if !passwords.ComparePassword(user.Password, body.Password, body.Login) {
 		return errors.New(
 			exceptionCodes.MakeException(exceptionCodes.EntityInvalid, "user"),
 		)

@@ -24,7 +24,7 @@ func MakeMigration() {
 	con := MakeConnection()
 
 	_, err := con.Database("main").Collection("users").Indexes().CreateOne(context.TODO(), mongo.IndexModel{
-		Keys:    bson.D{{"email", 1}},
+		Keys:    bson.D{{"email", 1}, {"login", 1}},
 		Options: options.Index().SetUnique(true),
 	})
 	if err != nil {
