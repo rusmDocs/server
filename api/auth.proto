@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+message User {
+  string id = 1;
+}
+
+message JWTTokens {
+  string accessToken = 1;
+  string refreshToken = 2;
+}
+
+message UserTokens {
+  string accessToken = 1;
+  string refreshToken = 2;
+  string id = 3;
+  int32 error = 4;
+}
+
+service AuthService {
+  rpc CreateTokens (User) returns (JWTTokens) {}
+  rpc CheckTokens (JWTTokens) returns (UserTokens) {}
+}
