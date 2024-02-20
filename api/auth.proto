@@ -1,17 +1,19 @@
 syntax = "proto3";
 
+option go_package = "api/auth";
+
 message User {
   string id = 1;
 }
 
 message JWTTokens {
-  string accessToken = 1;
-  string refreshToken = 2;
+  string access_token = 1;
+  string refresh_token = 2;
 }
 
 message UserTokens {
-  string accessToken = 1;
-  string refreshToken = 2;
+  string access_token = 1;
+  string refresh_token = 2;
   string id = 3;
   int32 error = 4;
 }

@@ -1,0 +1,7 @@
+version: "3"
+
+tasks:
+  makeGoProto:
+    cmds:
+      - protoc -I=api --go_out=server/ --go-grpc_out=server/ api/auth.proto
+    desc: "Generate Go proto files"
