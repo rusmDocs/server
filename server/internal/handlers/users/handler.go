@@ -54,6 +54,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 			return
 		case exceptionCodes.MakeException(exceptionCodes.EntityInvalid, "user"):
 			w.WriteHeader(http.StatusUnauthorized)
+			return
 		}
 	}
 
