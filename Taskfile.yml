@@ -5,3 +5,32 @@ tasks:
     cmds:
       - protoc -I=api --go_out=server/ --go-grpc_out=server/ api/auth.proto
     desc: "Generate Go proto files"
+  makePyProto:
+    cmds:
+      - python3 -m grpc_tools.protoc -Iapi --python_out=auth/dto --grpc_python_out=auth/dto api/auth.proto
+    desc: "Generate Python proto files"
+  runGo:
+    cmds:
+      - go mod tidy
+      - go run cmd/server/main.go --migration
+    desc: "Run Go server"
+  runPy:
+    cmds:
+      - source ./auth/venv/bin/activate
+      - pip3 install -r ./auth/requirements.txt
+      - python3 ./auth/main.py
+    desc: "Run Python server"
+  runMongo:
+    cmds:
+      - docker-compose up -d mongodb
+    desc: "Run MongoDB"
+  runRedis:
+    cmds:
+      - docker-compose up -d refresh_base
+    desc: "Run Redis"
+  runAll:
+      cmds:
+        - task: runMongo
+        - task: runRedis
+        - task: runPy
+        - task: runGo

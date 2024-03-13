@@ -32,6 +32,12 @@ func (user *User) createUser(body RegisterBody) error {
 		{"_id", result.InsertedID.(primitive.ObjectID)},
 	}).Decode(user)
 
+	if err != nil {
+		return errors.New(
+			exceptionCodes.MakeException(exceptionCodes.ConnectionFail, "auth"),
+		)
+	}
+
 	return nil
 }
 
