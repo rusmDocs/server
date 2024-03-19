@@ -7,20 +7,20 @@ import (
 )
 
 func HashPassword(password string, login string) string {
-	var w = sha512.New() // создание сетера для хэширования
+	var w = sha512.New()
 	// основа для хэширования - пароль и логин (чтобы избежать коллизий при хэшировании одинаковых паролей)
 	hash := append([]byte(password), []byte(login)...)
-	passwordByte := append(hash, []byte(config.Config.App.Salt)...) // добавление "соли" к паролю
+	passwordByte := append(hash, []byte(config.Config.App.Salt)...)
 
-	w.Write(passwordByte)                               // установил данные в сеттер
-	passwordHash := w.Sum(nil)                          // создал хэш
-	passwordHashHex := hex.EncodeToString(passwordHash) // перевел хэш в строку
+	w.Write(passwordByte)
+	passwordHash := w.Sum(nil)
+	passwordHashHex := hex.EncodeToString(passwordHash)
 
 	return passwordHashHex
 }
 
 func ComparePassword(passwordHash string, passwordUser string, loginUser string) bool {
-	passwordUser1 := HashPassword(passwordUser, loginUser) // создал хэш из пароля и логина
+	passwordUser1 := HashPassword(passwordUser, loginUser)
 
-	return passwordUser1 == passwordHash // сравнил хэши
+	return passwordUser1 == passwordHash
 }

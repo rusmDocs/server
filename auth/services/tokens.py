@@ -13,11 +13,14 @@ from auth.utils.payload import generate_token, decode_token
 
 
 class JWT(auth_pb2_grpc.AuthServiceServicer):
-    r = redis.Redis(host="localhost", port=6379, db=0) 
+    r = redis.Redis(host="localhost", port=6379, db=0)
 
     def CreateTokens(self, request, context):
         if request.id:
             access_token, refresh_token = generate_token(request.id)
+
+            print("decodes acces on create", decode_token(access_token)['exp_time'])
+
             self.r.set(refresh_token, request.id)
             return auth_pb2.JWTTokens(
                 access_token=access_token,
@@ -27,7 +30,9 @@ class JWT(auth_pb2_grpc.AuthServiceServicer):
     def CheckTokens(self, request, context):
         access, refresh = request.access_token, request.refresh_token
         try:
-            access_payload, refresh_payload = decode_token(access), decode_token(refresh) 
+            access_payload, refresh_payload = decode_token(access), decode_token(refresh)
+            print("datetime on check", datetime.now().timestamp())
+            print("acces on scheck", access_payload['exp_time'])
         except jwt.InvalidTokenError:
             return auth_pb2.UserTokens(
                 access_token="",
@@ -42,14 +47,14 @@ class JWT(auth_pb2_grpc.AuthServiceServicer):
                 id="",
                 status=2  
             )
-        elif datetime.fromtimestamp(refresh_payload['exp']) < datetime.now(): 
+        elif refresh_payload['exp_time'] < datetime.now().timestamp():
             return auth_pb2.UserTokens(
                 access_token="",
                 refresh_token="",
                 id="",
                 status=3  
             )
-        elif datetime.fromtimestamp(access_payload['exp']) < datetime.now(): 
+        elif access_payload['exp_time'] < datetime.now().timestamp():
             self.r.delete(refresh)
             access, refresh = generate_token(refresh_payload['id'])
             self.r.set(refresh, refresh_payload['id'])
