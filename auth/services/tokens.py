@@ -18,9 +18,6 @@ class JWT(auth_pb2_grpc.AuthServiceServicer):
     def CreateTokens(self, request, context):
         if request.id:
             access_token, refresh_token = generate_token(request.id)
-
-            print("decodes acces on create", decode_token(access_token)['exp_time'])
-
             self.r.set(refresh_token, request.id)
             return auth_pb2.JWTTokens(
                 access_token=access_token,
@@ -38,21 +35,21 @@ class JWT(auth_pb2_grpc.AuthServiceServicer):
                 access_token="",
                 refresh_token="",
                 id="",
-                status=1  
+                status=1  # invalid signature
             )
         if not self.r.get(refresh): 
             return auth_pb2.UserTokens(
                 access_token="",
                 refresh_token="",
                 id="",
-                status=2  
+                status=2  # refresh token was used
             )
         elif refresh_payload['exp_time'] < datetime.now().timestamp():
             return auth_pb2.UserTokens(
                 access_token="",
                 refresh_token="",
                 id="",
-                status=3  
+                status=3  # refresh token was expired
             )
         elif access_payload['exp_time'] < datetime.now().timestamp():
             self.r.delete(refresh)
@@ -62,12 +59,12 @@ class JWT(auth_pb2_grpc.AuthServiceServicer):
                 access_token=access,
                 refresh_token=refresh,
                 id=refresh_payload['id'],
-                status=4  
+                status=4  # access token was expired, but ok
             )
         else:
             return auth_pb2.UserTokens(
                 access_token=access,
                 refresh_token=refresh,
                 id=access_payload['id'],
-                status=0  
+                status=0  # all ok
             )
