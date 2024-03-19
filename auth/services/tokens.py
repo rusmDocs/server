@@ -1,15 +1,15 @@
 import datetime
 import os
 
-from auth.dto import auth_pb2_grpc
-from auth.dto import auth_pb2
+from dto import auth_pb2_grpc
+from dto import auth_pb2
 from datetime import datetime
 import jwt
 import dotenv
 
 import redis
 
-from auth.utils.payload import generate_token, decode_token
+from utils.payload import generate_token, decode_token
 
 
 class JWT(auth_pb2_grpc.AuthServiceServicer):

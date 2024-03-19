@@ -2,8 +2,8 @@ from concurrent import futures
 
 import grpc
 
-from auth.dto import auth_pb2_grpc
-from auth.services.tokens import JWT
+from dto import auth_pb2_grpc
+from services.tokens import JWT
 
 
 def serve():
